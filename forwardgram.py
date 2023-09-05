@@ -30,26 +30,27 @@ def start(config):
 
     # Input Messages Telegram Channels will be stored in these empty Entities
     input_channels_entities = []
-    output_channel_entities = []
+    # output_channel_entities = []
 
     # Iterating over dialogs and finding new entities and pushing them to our empty entities list above
     for d in client.iter_dialogs():
         if d.name in config["input_channel_names"] or d.entity.id in config["input_channel_ids"]:
             input_channels_entities.append(InputChannel(d.entity.id, d.entity.access_hash))
-        if d.name in config["output_channel_names"] or d.entity.id in config["output_channel_ids"]:
-            output_channel_entities.append(InputChannel(d.entity.id, d.entity.access_hash))
+        # if d.name in config["output_channel_names"] or d.entity.id in config["output_channel_ids"]:
+        #     output_channel_entities.append(InputChannel(d.entity.id, d.entity.access_hash))
 
     # Exit, dont wait for fire.        
-    if not output_channel_entities:
-        logger.error(f"Could not find any output channels in the user's dialogs")
-        sys.exit(1)
+    # if not output_channel_entities:
+    #     logger.error(f"Could not find any output channels in the user's dialogs")
+    #     sys.exit(1)
 
     if not input_channels_entities:
         logger.error(f"Could not find any input channels in the user's dialogs")
         sys.exit(1)
     
     # Use logging and print messages on your console.     
-    logging.info(f"Listening on {len(input_channels_entities)} channels. Forwarding messages to {len(output_channel_entities)} channels.")
+    logging.info(f"Listening on {len(input_channels_entities)} channels.")
+    # Forwarding messages to {len(output_channel_entities)} channels.")
     
 
     # TELEGRAM NEW MESSAGE - When new message triggers, come here
@@ -64,7 +65,7 @@ def start(config):
         # for output_channel in output_channel_entities:
 
         # Uncomment the line below to print full message in structured format on your console.
-        #logging.info(f"Message Was: {event.message}")
+        logging.info(f"Message Was: {event.message}")
 
         # We will parse the items from response. You can first view the full message above,
         # then decide which elements you want to parse from telegram response

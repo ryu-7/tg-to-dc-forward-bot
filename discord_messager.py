@@ -3,10 +3,6 @@ import sys
 import logging
 import discord
 
-catagory_1 = [INPUT_CHANNEL_1_NAME, INPUT_CHANNEL_2_NAME]   # change catagory list
-catagory_2 = [INPUT_CHANNEL_3_NAME]
-catagory_3 = [INPUT_CHANNEL_4_NAME]
-
 ''' 
 ------------------------------------------------------------------------
     DISCORD CLIENT - Init the client
@@ -25,8 +21,19 @@ with open('config.yml', 'rb') as f:
 
 message = sys.argv[1]
 source = sys.argv[2]
-source_msg = "====================\nThis news is brought you by: " + source + '\n\n'
-message = source_msg + message + "\n===================="
+message = "This news is brought you by: " + source + '\n\n' + message + "\n===================="
+
+'''
+------------------------------------------------------------------------
+    GET CHANNEL LIST
+------------------------------------------------------------------------
+'''
+channel_ids = config["discord_channel_id"]
+channel_cnt = len(channel_ids)
+channel_src = []
+for i in range(0, channel_cnt):
+    tag = "channel_" + str(i+1) + "_source"
+    channel_src.append(config[tag])
 
 ''' 
 ------------------------------------------------------------------------
@@ -40,28 +47,16 @@ message = source_msg + message + "\n===================="
 @discord_client.event
 async def on_ready():
 
-    print('We have logged in as {0.user}'.format(discord_client))
-    print('Awaiting Telegram Message')
+    for i in range(0, channel_cnt):
+        if source in channel_src[i]:
+            channel_client = discord_client.get_channel(channel_ids[i])
+            await channel_client.send(message)
 
-    # My channels are for RTX card drops and PS5
-    channel_1 = discord_client.get_channel(config["discord_1_channel"])
-    channel_2 = discord_client.get_channel(config["discord_2_channel"])
-    channel_3 = discord_client.get_channel(config["discord_3_channel"])
-    # channel_4 = discord_client.get_channel(config["discord_4_channel"])
+    # Set the traceback limit to 0 to suppress traceback output
+    sys.tracebacklimit = 0
 
-    if source in catagory_1:
-        await channel_1.send(message)
-    elif source in catagory_2:
-        await channel_2.send(message)
-    elif source in catagory_3:
-        await channel_3.send(message)
-
-    sys.exit(0)
+    # Exit the script without displaying any traceback or exception
+    sys.exit()
     # quit()
 
 discord_client.run(config["discord_bot_token"])
-
-    
-
-    
-

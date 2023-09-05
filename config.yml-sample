@@ -36,5 +36,14 @@ output_channel_ids:
   - OUTPUT_CHANNEL_1_ID
 # ...
 
+# Select which Telegram channel to which Discord channel
+channel_1_source:
+  - INPUT_CHANNEL_1_NAME
+  - INPUT_CHANNEL_2_NAME
+channel_2_source:
+  - INPUT_CHANNEL_3_NAME
+channel_3_source:
+  - INPUT_CHANNEL_4_NAME
+
 # Do not touch this: 
 input_channel_ids: []

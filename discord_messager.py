@@ -21,7 +21,8 @@ with open('config.yml', 'rb') as f:
 
 message = sys.argv[1]
 source = sys.argv[2]
-message = "This news is brought you by: " + source + '\n\n' + message + "\n===================="
+output_dict = {'msg': message,
+               'src': source}
 
 '''
 ------------------------------------------------------------------------
@@ -32,8 +33,8 @@ channel_ids = config["discord_channel_id"]
 channel_cnt = len(channel_ids)
 channel_src = []
 for i in range(0, channel_cnt):
-    tag = "channel_" + str(i+1) + "_source"
-    channel_src.append(config[tag])
+    tag_source = "channel_" + str(i+1) + "_source"
+    channel_src.append(config[tag_source])
 
 ''' 
 ------------------------------------------------------------------------
@@ -49,7 +50,10 @@ async def on_ready():
 
     for i in range(0, channel_cnt):
         if source in channel_src[i]:
+            tag_format = "channel_" + str(i+1) + "_format"
+            message = config[tag_format].format(**output_dict)
             channel_client = discord_client.get_channel(channel_ids[i])
+            print("Sending to: {}".format(config['discord_channel_names'][i]))
             await channel_client.send(message)
 
     # Set the traceback limit to 0 to suppress traceback output

@@ -1,40 +1,70 @@
+# ============================================================
+# Telegram API 
+# ============================================================
+
 # This has to be an integer. Read more [here](https://core.telegram.org/api/obtaining_api_id) | No quotes
 api_id: API_ID 
 
 # Long 32 characters hash identifier. Read more [here](https://core.telegram.org/api/obtaining_api_id) | With quotes
-api_hash: API_HASH
+api_hash: API_HASH 
 
 # Session name. Only one session (with a unique session name) can run at a time | With quotes
 session_name: SESSION_NAME
 
+# ============================================================
+# Discord API 
+# ============================================================
+
 # Discord Bot Token. Go create a bot on discord. | No quotes
 discord_bot_token: DISCORD_BOT_TOKEN
 
-# Discord Channels | No quotes
-discord_1_channel: DISCORD_1_CHANNEL_ID
-# ...
+# ============================================================
+# Discord Channels (Output)
+# ============================================================
+
+# Discord Channels IDs | No quotes
+discord_channel_id:
+  - DISCORD_1_CHANNEL_ID
+  # ...
+
+# Discord Channels Names | With quotes
+discord_channel_names:
+  - DISCORD_1_CHANNEL_NAME
+  # ...
+
+# ============================================================
+# Telegram Channels (Input)
+# ============================================================
 
 # The channel names that you'd like to forward messages from. Just add input telegram channel names here.
-# The user running the client must have these channels present on it's dialogs. | With quotes
+# The user running the client must have these channels present on it's dialogs. 
 input_channel_names:
   - INPUT_CHANNEL_1_NAME
-# ...
+  # ...
 
-# The output channel names that the messages will be forwarded to.
-# The user running the client must have a write access to those channels, and have the channels present on theirs dialogs. | With quotes
-output_channel_names: 
-  - OUTPUT_CHANNEL_1_NAME
-# ...
-
-# The channel IDs that you'd like to forward messages from. Just get channel id from channels you put as input_channel_names above (You can get a channel ID by forwarding any message from it to @userinfobot , and removing the -100 from the start ) | No quotes
+# The channel IDs that you'd like to forward messages from. Just get channel id from channels you put as input_channel_names above (You can get a channel ID by forwarding any message from it to @userinfobot , and removing the -100 from the start ) 
 input_channel_ids:
   - INPUT_CHANNEL_1_ID
-# ...
+  # ...
 
-# The output channel IDs that the messages will be forwarded to. Just get channel id from channels you put as output_channel_names above (You can get a channel ID by forwarding any message from it to @userinfobot , and removing the -100 from the start ) | No quotes
+# ============================================================
+# Telegram Channels (Output)
+# ============================================================
+
+# The output channel names that the messages will be forwarded to.
+# The user running the client must have a write access to those channels, and have the channels present on theirs dialogs.
+output_channel_names: 
+  - OUTPUT_CHANNEL_1_NAME
+  # ...
+
+# The output channel IDs that the messages will be forwarded to. Just get channel id from channels you put as output_channel_names above (You can get a channel ID by forwarding any message from it to @userinfobot , and removing the -100 from the start )
 output_channel_ids: 
   - OUTPUT_CHANNEL_1_ID
-# ...
+  # ...
+
+# ============================================================
+# Forward Policy
+# ============================================================
 
 # Select which Telegram channel to which Discord channel
 channel_1_source:
@@ -44,6 +74,19 @@ channel_2_source:
   - INPUT_CHANNEL_3_NAME
 channel_3_source:
   - INPUT_CHANNEL_4_NAME
+
+# ============================================================
+# Output Format
+# ============================================================
+
+# Discord channel message output format [message: %(msg)s, source: %(src)s]
+channel_1_format: OUTPUT_CHANNEL_1_FORMAT
+channel_2_format: OUTPUT_CHANNEL_2_FORMAT
+channel_3_format: OUTPUT_CHANNEL_3_FORMAT
+
+# ============================================================
+# Don't touch
+# ============================================================
 
 # Do not touch this: 
 input_channel_ids: []

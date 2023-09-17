@@ -3,8 +3,9 @@ from telethon.tl.types import InputChannel
 import yaml
 import sys
 import logging
-import discord
 import subprocess
+import os
+
 
 ''' 
 ------------------------------------------------------------------------
@@ -15,15 +16,18 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 logging.getLogger('telethon').setLevel(level=logging.WARNING)
 logger = logging.getLogger(__name__)
 
+
 ''' 
 ------------------------------------------------------------------------
     BOT FUNCTION - Everything that happens, happens for a reason
 ------------------------------------------------------------------------
 '''
+
+
 def start(config):
     # Telegram Client Init
-    client = TelegramClient(config["session_name"], 
-                            config["api_id"], 
+    client = TelegramClient(config["session_name"],
+                            config["api_id"],
                             config["api_hash"])
     # Telegram Client Start
     client.start()
@@ -39,7 +43,7 @@ def start(config):
         if d.name in config["output_channel_names"] or d.entity.id in config["output_channel_ids"]:
             output_channel_entities.append(InputChannel(d.entity.id, d.entity.access_hash))
 
-    # Exit, dont wait for fire.        
+    # Exit, don't wait for fire.
     if not output_channel_entities:
         logger.error(f"Could not find any output channels in the user's dialogs")
         sys.exit(1)
@@ -47,46 +51,65 @@ def start(config):
     if not input_channels_entities:
         logger.error(f"Could not find any input channels in the user's dialogs")
         sys.exit(1)
-    
+
     # Use logging and print messages on your console.     
-    logging.info(f"Listening on {len(input_channels_entities)} channels.")
+    logging.info(f"Forward Bot started. Listening on {len(input_channels_entities)} channels.")
+
     # Forwarding messages to {len(output_channel_entities)} channels.")
-    
 
     # TELEGRAM NEW MESSAGE - When new message triggers, come here
 
     @client.on(events.NewMessage(chats=input_channels_entities))
     async def handler(event):
 
+        # Get the sender's ID
+        sender_id = event.message.sender_id
+        # Access the message ID
+        message_id = event.message.id
+
         # Get where the chat is from
-        chat_from = event.chat if event.chat else (await event.get_chat()) # telegram MAY not send the chat enity
+        chat_from = event.chat if event.chat else (await event.get_chat())  # telegram MAY not send the chat enity
         chat_title = chat_from.title
 
-        logging.info(f"Message Source: \n{chat_title}")
+        # Uncomment the line below to print full message in structured format on your console.
+        # logging.info(f"Message: \n{event.message}")
 
-        for output_channel in output_channel_entities:
+        # We will parse the items from response. You can first view the full message above,
+        # then decide which elements you want to parse from telegram response
+        # If our entities contain URL, we want to parse and send Message + URL
+        try:
+            parsed_response = (event.message.message + '\n' + event.message.entities[0].url)
+            parsed_response = ''.join(parsed_response)
+        # Or else we only send Message
+        except:
+            parsed_response = event.message.message
 
-            # Uncomment the line below to print full message in structured format on your console.
-            logging.info(f"Message: \n{event.message}")
+        media_dir = "./media_" + str(sender_id) + '_' + str(message_id) + '/'
+        if event.message.media:
+            os.makedirs(media_dir, exist_ok=True)
+            await client.download_media(event.message, file=media_dir)
 
-            # We will parse the items from response. You can first view the full message above,
-            # then decide which elements you want to parse from telegram response
+        # This is probably not the best way to do this but definitely the easiest way.
+        # When message triggers you start discord messanger script in new thread and sends parsed input as sys.argv[1]
+        subprocess.call([sys.executable, "discord_messager.py", str(parsed_response), str(chat_title), str(sender_id), str(message_id)])
 
-            # If our entities contain URL, we want to parse and send Message + URL
-            try:
-                parsed_response = (event.message.message + '\n' + event.message.entities[0].url )
-                parsed_response = ''.join(parsed_response)
-            # Or else we only send Message    
-            except:
-                parsed_response = event.message.message
+        # This part is to forward message (text only, fix later) to telegram channels
+        # for output_channel in output_channel_entities:
+        #     # this will forward your message to channel_recieve in Telegram
+        #     await client.forward_messages(output_channel, event.message)
 
-            # This is probably not the best way to do this but definitely the easiest way. 
-            # When message triggers you start discord messanger script in new thread and sends parsed input as sys.argv[1]
-            subprocess.call(["python", "discord_messager.py", str(parsed_response), str(chat_title)])
-            # this will forward your message to channel_recieve in Telegram
-            await client.forward_messages(output_channel, event.message)  
+        # Clear the media directory if exists
+        if os.path.exists(media_dir):
+            for item in os.listdir(media_dir):
+                item_path = os.path.join(media_dir, item)
+                if os.path.isfile(item_path):
+                    os.remove(item_path)  # Remove files
+                elif os.path.isdir(item_path):
+                    os.rmdir(item_path)  # Remove subdirectories
+            os.rmdir(media_dir)  # Remove the top-level directory
 
     client.run_until_disconnected()
+
 
 ''' 
 ------------------------------------------------------------------------

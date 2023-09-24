@@ -5,6 +5,7 @@ import sys
 import logging
 import subprocess
 import os
+import shutil
 
 
 ''' 
@@ -16,14 +17,22 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 logging.getLogger('telethon').setLevel(level=logging.WARNING)
 logger = logging.getLogger(__name__)
 
+''' 
+------------------------------------------------------------------------
+                Clear past media 
+------------------------------------------------------------------------
+'''
+def del_dir(root_directory, prefix):
+    for item in os.listdir(root_directory):
+        item_path = os.path.join(root_directory, item)
+        if os.path.isdir(item_path) and item.startswith(prefix):
+            shutil.rmtree(item_path)
 
 ''' 
 ------------------------------------------------------------------------
     BOT FUNCTION - Everything that happens, happens for a reason
 ------------------------------------------------------------------------
 '''
-
-
 def start(config):
     # Telegram Client Init
     client = TelegramClient(config["session_name"],
@@ -84,7 +93,7 @@ def start(config):
         except:
             parsed_response = event.message.message
 
-        media_dir = "./media_" + str(sender_id) + '_' + str(message_id) + '/'
+        media_dir = "media_" + str(sender_id) + '_' + str(message_id)
         if event.message.media:
             os.makedirs(media_dir, exist_ok=True)
             await client.download_media(event.message, file=media_dir)
@@ -99,14 +108,7 @@ def start(config):
         #     await client.forward_messages(output_channel, event.message)
 
         # Clear the media directory if exists
-        if os.path.exists(media_dir):
-            for item in os.listdir(media_dir):
-                item_path = os.path.join(media_dir, item)
-                if os.path.isfile(item_path):
-                    os.remove(item_path)  # Remove files
-                elif os.path.isdir(item_path):
-                    os.rmdir(item_path)  # Remove subdirectories
-            os.rmdir(media_dir)  # Remove the top-level directory
+        del_dir("./", media_dir)
 
     client.run_until_disconnected()
 
@@ -123,4 +125,5 @@ if __name__ == "__main__":
         sys.exit(1)
     with open(sys.argv[1], 'rb') as f:
         config = yaml.safe_load(f)
+    del_dir("./", "media_")
     start(config)

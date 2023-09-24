@@ -85,6 +85,13 @@ channel_2_format: OUTPUT_CHANNEL_2_FORMAT
 channel_3_format: OUTPUT_CHANNEL_3_FORMAT
 
 # ============================================================
+# Remove Hyperlink Preview
+# ============================================================
+
+# Show hyperlink preview in message (need MANAGE_MESSAGE permission) | True/False
+link_preview: True
+
+# ============================================================
 # Don't touch
 # ============================================================
 

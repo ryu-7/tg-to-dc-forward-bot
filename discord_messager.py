@@ -67,8 +67,11 @@ async def on_ready():
             channel_client = discord_client.get_channel(channel_ids[i])
             # print("Sending to: {}".format(config['discord_channel_names'][i]))
             # print("message = '" + message + "'")
-
-            await channel_client.send(message, files=media_files if os.path.exists(media_dir) else None)
+            if output_dict["msg"] == '':
+                message = ''
+            msg_send = await channel_client.send(message, files=media_files if os.path.exists(media_dir) else None)
+            if config["link_preview"] == True:
+                await msg_send.edit(suppress=True)
 
     # Set the traceback limit to 0 to suppress traceback output
     sys.tracebacklimit = 0

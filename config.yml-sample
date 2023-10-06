@@ -79,7 +79,7 @@ channel_3_source:
 # Output Format
 # ============================================================
 
-# Discord channel message output format [message: %(msg)s, source: %(src)s]
+# Discord channel message output format [message: {msg}, source: {src}]
 channel_1_format: OUTPUT_CHANNEL_1_FORMAT
 channel_2_format: OUTPUT_CHANNEL_2_FORMAT
 channel_3_format: OUTPUT_CHANNEL_3_FORMAT
